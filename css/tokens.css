@@ -1,0 +1,33 @@
+:root {
+  --spaced-bg: #03060d;
+  --spaced-bg-deep: #010207;
+  --spaced-bg-navy: #061226;
+  --spaced-blue: #2388ff;
+  --spaced-grid: rgba(62, 145, 255, 0.055);
+  --spaced-grid-active: rgba(21, 112, 222, 0.72);
+  --spaced-glow: rgba(20, 102, 205, 0.13);
+  --spaced-grid-size: 3.9rem;
+  --color-surface: rgba(5, 12, 27, 0.72);
+  --color-text: #eff7ff;
+  --color-text-muted: #a4b6cb;
+  --color-border: rgba(55, 145, 255, 0.28);
+  --color-accent: #208cff;
+  --color-accent-strong: #0a70df;
+  --color-focus: #72b7ff;
+}
+
+:root[data-theme='light'] {
+  --spaced-bg: #f4f8ff;
+  --spaced-bg-deep: #e9f1fb;
+  --spaced-bg-navy: #dceafa;
+  --spaced-grid: rgba(20, 91, 174, 0.075);
+  --spaced-grid-active: rgba(20, 109, 215, 0.42);
+  --spaced-glow: rgba(20, 117, 226, 0.12);
+  --color-surface: rgba(250, 253, 255, 0.74);
+  --color-text: #0b1b32;
+  --color-text-muted: #49627d;
+  --color-border: rgba(25, 106, 204, 0.22);
+  --color-accent: #0c73de;
+  --color-accent-strong: #075cb8;
+  --color-focus: #075cb8;
+}

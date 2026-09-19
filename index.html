@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="SpaceD Operations Center — SpaceD v1"
+    />
+    <title>SpaceD Operations Center</title>
+    <link rel="icon" href="assets/images/favicon/spaced.ico" sizes="any" />
+    <script>
+      (() => {
+        const savedTheme = localStorage.getItem('spaced-theme');
+        const systemTheme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        document.documentElement.dataset.theme = savedTheme || systemTheme;
+      })();
+    </script>
+    <link rel="stylesheet" href="css/tokens.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="components/global-background/global-background.css" />
+    <link rel="stylesheet" href="components/header/header.css" />
+  </head>
+  <body>
+    <div class="global-background" aria-hidden="true">
+      <div class="global-background__ambient"></div>
+      <div class="global-background__grid"></div>
+      <div class="global-background__grid global-background__grid--active"></div>
+      <div class="global-background__glow"></div>
+    </div>
+
+    <header class="site-header" aria-label="Navegação principal">
+      <a class="site-header__brand" href="#" aria-label="SpaceD Operations Center — início">
+        <img src="assets/images/branding/logo-spaced-001.webp" alt="SpaceD" />
+      </a>
+      <nav class="site-header__nav" id="primary-navigation" aria-label="Navegação principal">
+        <a href="#">Início</a><a href="#">Serviços</a><a href="#">Projetos</a><a href="#">Contato</a>
+      </nav>
+      <div class="site-header__actions">
+        <button class="theme-toggle" type="button" aria-label="Alternar para tema claro" aria-pressed="false">
+          <svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.5"/><path d="M12 2v2.2M12 19.8V22M4.93 4.93l1.56 1.56M17.51 17.51l1.56 1.56M2 12h2.2M19.8 12H22M4.93 19.07l1.56-1.56M17.51 6.49l1.56-1.56"/></svg>
+          <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 14.4A8.6 8.6 0 0 1 9.6 3.5 8.7 8.7 0 1 0 20.5 14.4Z"/></svg>
+        </button>
+        <button class="site-header__cta" type="button">Falar com a gente</button>
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Abrir menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Estrutura temporária: permite validar o background durante o scroll. -->
+    <div class="background-validation" aria-hidden="true" data-temporary-validation></div>
+
+    <script type="module" src="components/global-background/global-background.js"></script>
+    <script type="module" src="components/header/header.js"></script>
+  </body>
+</html>

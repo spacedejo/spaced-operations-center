@@ -1,0 +1,74 @@
+.global-background {
+  --pointer-x: 50%;
+  --pointer-y: 45%;
+  --pointer-active: 0;
+  position: fixed;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 70% 12%, rgba(12, 52, 109, 0.23), transparent 68%),
+    radial-gradient(ellipse 60% 45% at 15% 82%, rgba(4, 29, 67, 0.28), transparent 72%),
+    linear-gradient(140deg, var(--spaced-bg-deep), var(--spaced-bg) 46%, var(--spaced-bg-navy));
+}
+
+.global-background__ambient,
+.global-background__grid,
+.global-background__glow {
+  position: absolute;
+  inset: 0;
+}
+
+.global-background__ambient {
+  opacity: 0.72;
+  background-image:
+    radial-gradient(circle at 11% 19%, rgba(97, 180, 255, 0.45) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 26% 74%, rgba(89, 169, 255, 0.28) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 54% 35%, rgba(93, 182, 255, 0.22) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 78% 22%, rgba(89, 169, 255, 0.35) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 91% 67%, rgba(99, 187, 255, 0.25) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 65% 88%, rgba(89, 169, 255, 0.2) 0 1px, transparent 1.5px);
+}
+
+.global-background__grid {
+  background-image:
+    linear-gradient(to right, var(--spaced-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--spaced-grid) 1px, transparent 1px);
+  background-size: var(--spaced-grid-size) var(--spaced-grid-size);
+}
+
+.global-background__grid--active {
+  opacity: var(--pointer-active);
+  background-image:
+    linear-gradient(to right, var(--spaced-grid-active) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--spaced-grid-active) 1px, transparent 1px);
+  -webkit-mask-image: radial-gradient(circle 19rem at var(--pointer-x) var(--pointer-y), #000 0%, rgba(0, 0, 0, 0.92) 18%, rgba(0, 0, 0, 0.5) 48%, transparent 78%);
+  mask-image: radial-gradient(circle 19rem at var(--pointer-x) var(--pointer-y), #000 0%, rgba(0, 0, 0, 0.92) 18%, rgba(0, 0, 0, 0.5) 48%, transparent 78%);
+  transition: opacity 300ms ease;
+}
+
+.global-background__glow {
+  opacity: calc(var(--pointer-active) * 0.85);
+  background: radial-gradient(circle 16rem at var(--pointer-x) var(--pointer-y), var(--spaced-glow), transparent 72%);
+  transition: opacity 300ms ease;
+}
+
+.background-validation {
+  position: relative;
+  z-index: 1;
+  min-height: 190vh;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .global-background__grid--active,
+  .global-background__glow {
+    transition: none;
+  }
+}
+
+@media (max-width: 42rem) {
+  :root {
+    --spaced-grid-size: 3.5rem;
+  }
+}
