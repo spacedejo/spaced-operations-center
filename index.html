@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="css/styles.css" />
     <link rel="stylesheet" href="components/global-background/global-background.css" />
     <link rel="stylesheet" href="components/header/header.css" />
+    <link rel="stylesheet" href="components/institutional-content/institutional-content.css" />
   </head>
   <body>
     <div class="global-background" aria-hidden="true">
@@ -48,8 +49,55 @@
       </div>
     </header>
 
-    <!-- Estrutura temporária: permite validar o background durante o scroll. -->
-    <div class="background-validation" aria-hidden="true" data-temporary-validation></div>
+    <main class="institutional-content">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero__content">
+          <p class="eyebrow">Ideias em órbita</p>
+          <h1 id="hero-title">Soluções digitais<br />para um futuro<br /><span>mais inteligente.</span></h1>
+          <p class="hero__description">Tecnologia, design e estratégia para levar sua ideia mais longe.</p>
+          <div class="hero__actions">
+            <button class="button-primary" type="button" disabled title="Destino disponível em uma próxima evolução">
+              Conheça nossos serviços
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M14 6l6 6-6 6" /></svg>
+            </button>
+            <button class="button-link" type="button" disabled title="Destino disponível em uma próxima evolução">Ver projetos</button>
+          </div>
+        </div>
+        <aside class="hero__pointer-note" aria-label="Informação sobre a iluminação interativa">
+          <span></span>
+          <p>A grade se ilumina conforme o movimento do mouse.</p>
+        </aside>
+      </section>
+
+      <section class="pillars" aria-label="Pilares da SpaceD">
+        <article class="pillar-card">
+          <svg class="pillar-card__icon" viewBox="0 0 48 48" aria-hidden="true"><path d="m10 30 10-10 8-12 10 10-12 8-10 10-6-6Zm17-15 6 6M17 29l-5 9 9-5M29 17l9-5-5 9" /><circle cx="30" cy="18" r="2" /></svg>
+          <h2>Estratégia</h2><p>Planejamento para ideias que decolam.</p>
+        </article>
+        <article class="pillar-card">
+          <svg class="pillar-card__icon" viewBox="0 0 48 48" aria-hidden="true"><path d="m24 7 16 9-16 9L8 16l16-9Zm-16 18 16 9 16-9M8 34l16 9 16-9" /></svg>
+          <h2>Desenvolvimento</h2><p>Tecnologia sob medida para o seu negócio.</p>
+        </article>
+        <article class="pillar-card">
+          <svg class="pillar-card__icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M8 40V28h7v12M21 40V18h7v22M34 40V9h7v31" /><circle cx="37.5" cy="6" r="3" /></svg>
+          <h2>Resultados</h2><p>Soluções que geram valor real.</p>
+        </article>
+      </section>
+
+      <section class="about" aria-labelledby="about-title">
+        <div class="about__heading">
+          <p class="eyebrow">Mais do que tecnologia</p>
+          <h2 id="about-title">Transformamos ideias<br /><span>em resultados.</span></h2>
+        </div>
+        <p class="about__description">Na SpaceD, unimos estratégia, design e desenvolvimento para criar soluções digitais que impulsionam pessoas, marcas e negócios.</p>
+      </section>
+
+      <section class="closing-banner" aria-label="Manifesto SpaceD">
+        <svg class="closing-banner__icon" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5a14 14 0 0 0-8.5 25.1c1.7 1.3 2.5 3.3 2.5 5.4h12c0-2.1.8-4.1 2.5-5.4A14 14 0 0 0 24 5Z" /><path d="M19 42h10M20 38h8M24 11v12M19 18l5 5 5-5" /></svg>
+        <div class="closing-banner__message"><strong>O futuro é construído por quem acredita em boas ideias.</strong><p>Tecnologia é o meio. Pessoas são o propósito.</p></div>
+        <p class="closing-banner__signature">— SpaceD</p>
+      </section>
+    </main>
 
     <script type="module" src="components/global-background/global-background.js"></script>
     <script type="module" src="components/header/header.js"></script>
