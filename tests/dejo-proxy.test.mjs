@@ -109,3 +109,20 @@ test('repassa limitação do n8n sem expor detalhes internos', async () => {
     assert.deepEqual(await response.json(), { error: 'rate_limited', retry_after_seconds: 30 });
   } finally { globalThis.fetch = original; }
 });
+
+test('transforma 403 interno do n8n em erro genérico sem vazar headers ou detalhe', async () => {
+  const original = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async () => ++calls === 1
+    ? Response.json({ success: true, hostname: new URL(url).hostname, action: 'dejo_chat' })
+    : Response.json({ error: 'forbidden', detail: 'invalid proxy key' }, {
+        status: 403,
+        headers: { 'X-Internal-Reason': 'private' },
+      });
+  try {
+    const response = await onRequestPost(context());
+    assert.equal(response.status, 502);
+    assert.deepEqual(await response.json(), { error: 'unavailable' });
+    assert.equal(response.headers.get('X-Internal-Reason'), null);
+  } finally { globalThis.fetch = original; }
+});
