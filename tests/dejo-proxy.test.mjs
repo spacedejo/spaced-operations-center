@@ -354,6 +354,40 @@ test('widget usa interaction-only e não reaproveita token consumido', async () 
   } finally { globalThis.fetch = originalFetch; globalThis.window = originalWindow; globalThis.document = originalDocument; }
 });
 
+test('abrir o chat libera o primeiro envio sem antecipar o desafio', async () => {
+  const chatSource = readFileSync(new URL('../components/dejo-chat/dejo-chat.js', import.meta.url), 'utf8')
+    .replace(/^import .*;\r?\n/gm, '');
+  const originalDocument = globalThis.document;
+  const listeners = new Map();
+  const simpleElement = () => ({ addEventListener() {}, setAttribute() {}, focus() {} });
+  const panel = { hidden: true };
+  const send = { disabled: true };
+  const retry = { ...simpleElement(), disabled: false };
+  const toggle = { ...simpleElement(), addEventListener(type, listener) { listeners.set(type, listener); } };
+  const elements = new Map([
+    ['.dejo-chat__panel', panel], ['.dejo-chat__toggle', toggle],
+    ['.dejo-chat__close', simpleElement()], ['.dejo-chat__messages', simpleElement()],
+    ['.dejo-chat__challenge', simpleElement()], ['.dejo-chat__status', simpleElement()],
+    ['.dejo-chat__form', simpleElement()], ['textarea', simpleElement()],
+    ['.dejo-chat__send', send], ['.dejo-chat__retry', retry],
+  ]);
+  globalThis.document = {
+    querySelector() { return { querySelector(selector) { return elements.get(selector); } }; },
+    addEventListener() {},
+  };
+  try {
+    const stubs = `const DEJO_MESSAGE_MAX_LENGTH = 1000;
+      const createConversationId = () => 'test-session';
+      const sendDejoMessage = () => { throw new Error('unexpected_send'); };
+      const createDejoChallenge = () => { throw new Error('unexpected_challenge'); };`;
+    await import(`data:text/javascript,${encodeURIComponent(`${stubs}\n${chatSource}`)}`);
+    assert.equal(send.disabled, true);
+    listeners.get('click')();
+    assert.equal(panel.hidden, false);
+    assert.equal(send.disabled, false);
+  } finally { globalThis.document = originalDocument; }
+});
+
 test('código público não contém credenciais e config devolve apenas site key', async () => {
   for (const file of ['dejo-chat.js', 'dejo-security.js', 'dejo-service.js']) {
     const client = readFileSync(new URL(`../components/dejo-chat/${file}`, import.meta.url), 'utf8');

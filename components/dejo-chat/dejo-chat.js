@@ -73,6 +73,7 @@ function openChat() {
   panel.hidden = false;
   toggle.setAttribute('aria-expanded', 'true');
   toggle.setAttribute('aria-label', 'Fechar conversa com DEJO');
+  syncButtons();
   input.focus();
 }
 
