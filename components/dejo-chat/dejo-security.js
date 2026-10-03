@@ -26,14 +26,18 @@ export async function createDejoChallenge(container, onChange) {
     action: 'dejo_chat',
     theme: document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
     size: 'flexible',
+    appearance: 'interaction-only',
+    'refresh-expired': 'auto',
     callback(value) { token = value; onChange(true); },
-    'expired-callback'() { token = ''; onChange(false); },
-    'error-callback'() { token = ''; onChange(false); },
+    'expired-callback'() { token = ''; onChange(false, 'expired'); },
+    'error-callback'() { token = ''; onChange(false, 'error'); },
   });
   if (widgetId === undefined) throw new Error('security_unavailable');
 
   return {
     getToken() { return token; },
+    consume() { token = ''; onChange(false); },
     reset() { token = ''; onChange(false); turnstile.reset(widgetId); },
+    destroy() { token = ''; turnstile.remove(widgetId); container.replaceChildren(); },
   };
 }

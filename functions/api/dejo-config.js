@@ -4,7 +4,9 @@ const json = (body, status) => new Response(JSON.stringify(body), {
 });
 
 export function onRequestGet({ env }) {
-  if (!env.DEJO_WEBHOOK_URL || !env.DEJO_TURNSTILE_SITE_KEY || !env.DEJO_TURNSTILE_SECRET || !env.DEJO_PROXY_KEY) {
+  if (!env.DEJO_WEBHOOK_URL || !env.DEJO_TURNSTILE_SITE_KEY || !env.DEJO_TURNSTILE_SECRET ||
+      !env.DEJO_PROXY_KEY || typeof env.DEJO_CHAT_SESSION_SECRET !== 'string' ||
+      new TextEncoder().encode(env.DEJO_CHAT_SESSION_SECRET).length < 32) {
     return json({ error: 'unavailable' }, 503);
   }
   try {

@@ -21,29 +21,50 @@ let retryUntil = 0;
 let retryTimer = null;
 let challenge = null;
 let securityLoading = null;
-let securityReady = false;
+let challengeReady = false;
+let verificationRequired = false;
 
 function syncButtons() {
-  const blocked = pending || Date.now() < retryUntil || !securityReady;
-  send.disabled = blocked;
+  const blocked = pending || Date.now() < retryUntil;
+  send.disabled = blocked || (verificationRequired && !challengeReady);
   retry.disabled = blocked;
+}
+
+function resumeAfterChallenge() {
+  if (verificationRequired && challengeReady && !pending && failedMessage) {
+    submitMessage(failedMessage, true);
+  }
+}
+
+function clearChallenge() {
+  if (!challenge) return;
+  challenge.destroy();
+  challenge = null;
+  challengeReady = false;
 }
 
 function initializeSecurity() {
   if (challenge || securityLoading) return;
   status.textContent = 'Preparando a verificação de segurança...';
-  securityLoading = createDejoChallenge(challengeContainer, (ready) => {
-    securityReady = ready;
+  securityLoading = createDejoChallenge(challengeContainer, (ready, reason) => {
+    challengeReady = ready;
     syncButtons();
-    if (!pending && ready && status.textContent === 'Preparando a verificação de segurança...') {
-      status.textContent = '';
+    if (ready) {
+      retry.hidden = true;
+      resumeAfterChallenge();
+    } else if (reason === 'error') {
+      status.textContent = 'Falha na verificação. Tente novamente.';
+      retry.hidden = false;
     }
   }).then((instance) => {
     challenge = instance;
+    securityLoading = null;
     syncButtons();
+    resumeAfterChallenge();
   }).catch(() => {
     securityLoading = null;
     status.textContent = 'A conversa com o DEJO está indisponível no momento.';
+    retry.hidden = false;
     syncButtons();
   });
 }
@@ -53,7 +74,6 @@ function openChat() {
   toggle.setAttribute('aria-expanded', 'true');
   toggle.setAttribute('aria-label', 'Fechar conversa com DEJO');
   input.focus();
-  initializeSecurity();
 }
 
 function closeChat() {
@@ -89,7 +109,7 @@ async function submitMessage(message, isRetry = false) {
   const trimmed = message.trim();
   if (pending || Date.now() < retryUntil) return;
   const challengeToken = challenge?.getToken();
-  if (!challengeToken) {
+  if (verificationRequired && !challengeToken) {
     status.textContent = 'Conclua a verificação de segurança para enviar.';
     return;
   }
@@ -105,7 +125,7 @@ async function submitMessage(message, isRetry = false) {
   }
   failedMessage = trimmed;
   pending = true;
-  challenge.reset();
+  if (challengeToken) challenge.consume();
   syncButtons();
   retry.hidden = true;
   status.textContent = 'DEJO está respondendo...';
@@ -114,13 +134,20 @@ async function submitMessage(message, isRetry = false) {
     const result = await sendDejoMessage({ sessionId, message: trimmed, challengeToken });
     addMessage(result.reply, 'dejo');
     failedMessage = null;
+    verificationRequired = false;
+    clearChallenge();
     status.textContent = '';
   } catch (error) {
     if (error.kind === 'validation') {
+      clearChallenge();
       status.textContent = 'Essa mensagem não pôde ser enviada. Revise o texto e tente novamente.';
     } else if (error.kind === 'security') {
-      status.textContent = 'A verificação expirou. Conclua-a novamente para tentar.';
+      verificationRequired = true;
+      status.textContent = 'Verificação necessária para continuar a conversa.';
+      if (challenge) challenge.reset();
+      else initializeSecurity();
     } else if (error.kind === 'limited') {
+      clearChallenge();
       status.textContent = 'Muitas solicitações no momento. Tente novamente em instantes.';
       if (error.retryAfterSeconds) {
         retryUntil = Date.now() + error.retryAfterSeconds * 1000;
@@ -128,12 +155,14 @@ async function submitMessage(message, isRetry = false) {
         retryTimer = setInterval(updateLimit, 1000);
       }
     } else {
+      clearChallenge();
       status.textContent = 'Não consegui responder agora. Tente novamente em instantes.';
     }
-    retry.hidden = false;
+    retry.hidden = verificationRequired;
   } finally {
     pending = false;
     syncButtons();
+    resumeAfterChallenge();
   }
 }
 
@@ -153,5 +182,9 @@ input.addEventListener('keydown', (event) => {
   }
 });
 retry.addEventListener('click', () => {
-  if (failedMessage) submitMessage(failedMessage, true);
+  if (verificationRequired && !challengeReady) {
+    if (challenge) challenge.reset();
+    else initializeSecurity();
+  }
+  else if (failedMessage) submitMessage(failedMessage, true);
 });

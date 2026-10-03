@@ -23,7 +23,8 @@ export async function sendDejoMessage({ sessionId, message, challengeToken }) {
     response = await fetch(DEJO_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ session_id: sessionId, message: trimmed, turnstile_token: challengeToken }),
+      body: JSON.stringify({ session_id: sessionId, message: trimmed,
+        ...(challengeToken ? { turnstile_token: challengeToken } : {}) }),
     });
   } catch {
     throw new DejoServiceError('unavailable');
