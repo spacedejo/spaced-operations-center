@@ -35,7 +35,8 @@ export async function onRequestPost({ request, env }) {
 
   const webhookUrl = env.DEJO_WEBHOOK_URL;
   const turnstileSecret = env.DEJO_TURNSTILE_SECRET;
-  if (!webhookUrl || !turnstileSecret || !env.DEJO_TURNSTILE_SITE_KEY) {
+  const proxyKey = env.DEJO_PROXY_KEY;
+  if (!webhookUrl || !turnstileSecret || !env.DEJO_TURNSTILE_SITE_KEY || !proxyKey) {
     return json({ error: 'unavailable' }, 503);
   }
   try {
@@ -69,7 +70,7 @@ export async function onRequestPost({ request, env }) {
   try {
     upstream = await fetch(webhookUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Dejo-Proxy-Key': proxyKey },
       body: JSON.stringify({ session_id: sessionId, message: message.trim() }),
       signal: AbortSignal.timeout(30000),
     });

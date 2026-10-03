@@ -12,6 +12,7 @@ const env = {
   DEJO_WEBHOOK_URL: 'https://example.invalid/dejo',
   DEJO_TURNSTILE_SECRET: 'test-secret',
   DEJO_TURNSTILE_SITE_KEY: 'test-site-key',
+  DEJO_PROXY_KEY: 'test-proxy-key',
 };
 const payload = {
   session_id: 'dejo_test_session_1234',
@@ -92,6 +93,7 @@ test('encaminha só após Turnstile válido e preserva o contrato', async () => 
     assert.deepEqual(await response.json(), { reply: 'Tudo bem!', session_id: payload.session_id });
     assert.equal(calls.length, 2);
     assert.deepEqual(JSON.parse(calls[1].options.body), { session_id: payload.session_id, message: payload.message });
+    assert.equal(calls[1].options.headers['X-Dejo-Proxy-Key'], env.DEJO_PROXY_KEY);
   } finally { globalThis.fetch = original; }
 });
 

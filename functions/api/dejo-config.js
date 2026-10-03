@@ -4,7 +4,7 @@ const json = (body, status) => new Response(JSON.stringify(body), {
 });
 
 export function onRequestGet({ env }) {
-  if (!env.DEJO_WEBHOOK_URL || !env.DEJO_TURNSTILE_SITE_KEY || !env.DEJO_TURNSTILE_SECRET) {
+  if (!env.DEJO_WEBHOOK_URL || !env.DEJO_TURNSTILE_SITE_KEY || !env.DEJO_TURNSTILE_SECRET || !env.DEJO_PROXY_KEY) {
     return json({ error: 'unavailable' }, 503);
   }
   try {
