@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "include": ["/api/dejo", "/api/dejo-config"],
+  "exclude": []
+}

@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="components/global-background/global-background.css" />
     <link rel="stylesheet" href="components/header/header.css" />
     <link rel="stylesheet" href="components/institutional-content/institutional-content.css" />
+    <link rel="stylesheet" href="components/dejo-chat/dejo-chat.css" />
   </head>
   <body>
     <div class="global-background" aria-hidden="true">
@@ -99,7 +100,39 @@
       </section>
     </main>
 
+    <aside class="dejo-chat" aria-label="Assistente DEJO">
+      <section class="dejo-chat__panel" id="dejo-chat-panel" role="dialog" aria-label="Conversa com DEJO" hidden>
+        <header class="dejo-chat__header">
+          <div class="dejo-chat__identity">
+            <img src="assets/images/agente-dejo/agente-dejo.webp" alt="" width="44" height="44" />
+            <div><strong>DEJO</strong><span>Assistente da SpaceD</span></div>
+          </div>
+          <button class="dejo-chat__close" type="button" aria-label="Fechar conversa">×</button>
+        </header>
+        <div class="dejo-chat__messages" role="log" aria-label="Mensagens da conversa" aria-live="polite" aria-relevant="additions text">
+          <p class="dejo-chat__welcome">Olá! Sou o DEJO. Tire suas dúvidas comigo.</p>
+        </div>
+        <div class="dejo-chat__challenge" aria-label="Verificação de segurança"></div>
+        <p class="dejo-chat__status" role="status" aria-live="polite"></p>
+        <form class="dejo-chat__form">
+          <label class="dejo-chat__label" for="dejo-chat-message">Sua mensagem</label>
+          <textarea id="dejo-chat-message" name="message" rows="1" maxlength="1000" placeholder="Escreva sua mensagem..." required></textarea>
+          <button class="dejo-chat__send" type="submit" aria-label="Enviar mensagem" disabled>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6" /></svg>
+          </button>
+        </form>
+        <button class="dejo-chat__retry" type="button" hidden>Tentar novamente</button>
+      </section>
+      <div class="dejo-chat__launcher">
+        <span class="dejo-chat__hint">Precisa de ajuda? Fale com o DEJO.</span>
+        <button class="dejo-chat__toggle" type="button" aria-label="Abrir conversa com DEJO" aria-controls="dejo-chat-panel" aria-expanded="false">
+          <img src="assets/images/agente-dejo/agente-dejo.webp" alt="" width="76" height="76" />
+        </button>
+      </div>
+    </aside>
+
     <script type="module" src="components/global-background/global-background.js"></script>
     <script type="module" src="components/header/header.js"></script>
+    <script type="module" src="components/dejo-chat/dejo-chat.js"></script>
   </body>
 </html>

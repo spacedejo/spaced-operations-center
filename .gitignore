@@ -3,3 +3,4 @@ docs/
 .env.*
 !.env.example
 *.log
+.dev.vars*
