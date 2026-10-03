@@ -112,6 +112,11 @@ test('repassa limitação do n8n sem expor detalhes internos', async () => {
 
 test('transforma 403 interno do n8n em erro genérico sem vazar headers ou detalhe', async () => {
   const original = globalThis.fetch;
+  const originalInfo = console.info;
+  const originalWarn = console.warn;
+  const diagnostics = [];
+  console.info = (...args) => diagnostics.push(args);
+  console.warn = (...args) => diagnostics.push(args);
   let calls = 0;
   globalThis.fetch = async () => ++calls === 1
     ? Response.json({ success: true, hostname: new URL(url).hostname, action: 'dejo_chat' })
@@ -124,5 +129,63 @@ test('transforma 403 interno do n8n em erro genérico sem vazar headers ou detal
     assert.equal(response.status, 502);
     assert.deepEqual(await response.json(), { error: 'unavailable' });
     assert.equal(response.headers.get('X-Internal-Reason'), null);
-  } finally { globalThis.fetch = original; }
+    assert.deepEqual(diagnostics, [
+      ['dejo_proxy', { stage: 'upstream_response', status: 403 }],
+      ['dejo_proxy', { stage: 'upstream_contract', category: 'unexpected_response', status: 403 }],
+    ]);
+  } finally {
+    globalThis.fetch = original;
+    console.info = originalInfo;
+    console.warn = originalWarn;
+  }
+});
+
+test('registra status antes de tentar ler resposta não JSON, sem registrar segredo', async () => {
+  const original = globalThis.fetch;
+  const originalInfo = console.info;
+  const originalWarn = console.warn;
+  const diagnostics = [];
+  console.info = (...args) => diagnostics.push(args);
+  console.warn = (...args) => diagnostics.push(args);
+  let calls = 0;
+  globalThis.fetch = async () => ++calls === 1
+    ? Response.json({ success: true, hostname: new URL(url).hostname, action: 'dejo_chat' })
+    : new Response('Forbidden', { status: 403 });
+  try {
+    const response = await onRequestPost(context());
+    assert.equal(response.status, 502);
+    assert.deepEqual(await response.json(), { error: 'unavailable' });
+    assert.deepEqual(diagnostics, [
+      ['dejo_proxy', { stage: 'upstream_response', status: 403 }],
+      ['dejo_proxy', { stage: 'upstream_body', category: 'invalid_json', status: 403 }],
+    ]);
+    assert.equal(JSON.stringify(diagnostics).includes(env.DEJO_PROXY_KEY), false);
+    assert.equal(JSON.stringify(diagnostics).includes(env.DEJO_WEBHOOK_URL), false);
+  } finally {
+    globalThis.fetch = original;
+    console.info = originalInfo;
+    console.warn = originalWarn;
+  }
+});
+
+test('distingue falha de conexão sem registrar detalhes da infraestrutura', async () => {
+  const original = globalThis.fetch;
+  const originalWarn = console.warn;
+  const diagnostics = [];
+  console.warn = (...args) => diagnostics.push(args);
+  let calls = 0;
+  globalThis.fetch = async () => {
+    if (++calls === 1) return Response.json({ success: true, hostname: new URL(url).hostname, action: 'dejo_chat' });
+    throw new Error('private upstream URL and credential must not be logged');
+  };
+  try {
+    const response = await onRequestPost(context());
+    assert.equal(response.status, 502);
+    assert.deepEqual(diagnostics, [
+      ['dejo_proxy', { stage: 'upstream_fetch', category: 'connection_or_timeout' }],
+    ]);
+  } finally {
+    globalThis.fetch = original;
+    console.warn = originalWarn;
+  }
 });

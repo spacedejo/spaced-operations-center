@@ -75,13 +75,16 @@ export async function onRequestPost({ request, env }) {
       signal: AbortSignal.timeout(30000),
     });
   } catch {
+    console.warn('dejo_proxy', { stage: 'upstream_fetch', category: 'connection_or_timeout' });
     return json({ error: 'unavailable' }, 502);
   }
+  console.info('dejo_proxy', { stage: 'upstream_response', status: upstream.status });
 
   let responseBody;
   try {
     responseBody = await upstream.json();
   } catch {
+    console.warn('dejo_proxy', { stage: 'upstream_body', category: 'invalid_json', status: upstream.status });
     return json({ error: 'unavailable' }, 502);
   }
 
@@ -92,6 +95,7 @@ export async function onRequestPost({ request, env }) {
       ...(Number.isFinite(seconds) && seconds > 0 ? { retry_after_seconds: Math.ceil(seconds) } : {}) }, 429);
   }
   if (!upstream.ok || typeof responseBody?.reply !== 'string' || responseBody?.session_id !== sessionId) {
+    console.warn('dejo_proxy', { stage: 'upstream_contract', category: 'unexpected_response', status: upstream.status });
     return json({ error: 'unavailable' }, 502);
   }
 
